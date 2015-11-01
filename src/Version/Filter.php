@@ -57,7 +57,7 @@ final class Filter
 	) {
 		$this->cache = new Nette\Caching\Cache(
 			$storage,
-			__CLASS__
+			self::class
 		);
 		$this->expire = $expire instanceof DateTime ? $expire : new DateTime($expire);
 	}
