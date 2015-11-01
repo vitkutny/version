@@ -1,0 +1,12 @@
+{
+	"name": "vitkutny/version",
+	"require": {
+		"nette/http": "~2.0",
+		"nette/caching": "~2.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"VitKutny\\": "src/"
+		}
+	}
+}
