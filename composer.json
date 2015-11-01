@@ -1,8 +1,12 @@
 {
 	"name": "vitkutny/version",
 	"require": {
-		"nette/http": "~2.0",
-		"nette/caching": "~2.0"
+		"php": "~7.0",
+		"nette/http": "~2.0"
+	},
+	"suggest": {
+		"nette/caching": "Caching support",
+		"nette/di": "Register filter using extension"
 	},
 	"autoload": {
 		"psr-4": {
