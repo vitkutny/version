@@ -57,7 +57,11 @@ final class Filter
 	) {
 		$this->cache = new Nette\Caching\Cache(
 			$storage,
-			self::class
+			strtr(
+				self::class,
+				'\\',
+				Nette\Caching\Cache::NAMESPACE_SEPARATOR
+			)
 		);
 		$this->expire = $expire instanceof DateTime ? $expire : new DateTime($expire);
 	}
