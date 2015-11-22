@@ -2,7 +2,7 @@
 	"name": "vitkutny/version",
 	"extra": {
 		"extensions": {
-			"vitkutny_version": "VitKutny\\Version\\Extension"
+			"vitkutny.version": "VitKutny\\Version\\Extension"
 		}
 	},
 	"require": {
