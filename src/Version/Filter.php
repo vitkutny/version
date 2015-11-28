@@ -66,6 +66,38 @@ final class Filter
 		$this->expire = $expire instanceof DateTime ? $expire : new DateTime($expire);
 	}
 
+	public function __invoke(
+		$url,
+		string $directory = NULL,
+		string $parameter = NULL
+	) : string
+	{
+		$arguments = [
+			$url,
+			$directory ? : $this->directory,
+			$parameter ? : $this->parameter,
+		];
+
+		return $this->cache ? $this->cache->load(
+			$arguments,
+			function (& $dependencies) use
+			(
+				$arguments
+			) {
+				$dependencies[Nette\Caching\Cache::EXPIRE] = $this->expire;
+				$arguments[] = &$dependencies;
+
+				return $this->process(
+					...
+					$arguments
+				);
+			}
+		) : $this->process(
+			...
+			$arguments
+		);
+	}
+
 	private function process(
 		$url,
 		string $directory,
@@ -97,40 +129,11 @@ final class Filter
 
 		return preg_replace(
 			'#^/+#',
-			'/',
+			Nette\Utils\Strings::startsWith(
+				$url->getPath(),
+				'/'
+			) ? '/' : NULL,
 			$url
-		);
-	}
-
-	public function __invoke(
-		$url,
-		string $directory = NULL,
-		string $parameter = NULL
-	) : string
-	{
-		$arguments = [
-			$url,
-			$directory ? : $this->directory,
-			$parameter ? : $this->parameter,
-		];
-
-		return $this->cache ? $this->cache->load(
-			$arguments,
-			function (& $dependencies) use
-			(
-				$arguments
-			) {
-				$dependencies[Nette\Caching\Cache::EXPIRE] = $this->expire;
-				$arguments[] = &$dependencies;
-
-				return $this->process(
-					...
-					$arguments
-				);
-			}
-		) : $this->process(
-			...
-			$arguments
 		);
 	}
 }
