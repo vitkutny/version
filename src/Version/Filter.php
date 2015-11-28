@@ -66,42 +66,6 @@ final class Filter
 		$this->expire = $expire instanceof DateTime ? $expire : new DateTime($expire);
 	}
 
-	private function process(
-		$url,
-		string $directory,
-		string $parameter,
-		array & $dependencies = []
-	) : string
-	{
-		$url = new Nette\Http\Url($url);
-		$time = NULL;
-		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
-			$headers = @get_headers(
-				$url,
-				TRUE
-			);
-			if (is_array($headers) && isset($headers['Last-Modified'])) {
-				$time = new DateTime($headers['Last-Modified']);
-				$time = $time->getTimestamp();
-			}
-		} elseif ($time = @filemtime($filename = $directory . $url->getPath())) {
-			if ($dependencies) {
-				unset($dependencies[Nette\Caching\Cache::EXPIRE]);
-				$dependencies[Nette\Caching\Cache::FILES] = $filename;
-			}
-		}
-		$url->setQueryParameter(
-			$parameter,
-			$time ? : $this->time
-		);
-
-		return preg_replace(
-			'#^/+#',
-			'/',
-			$url
-		);
-	}
-
 	public function __invoke(
 		$url,
 		string $directory = NULL,
@@ -131,6 +95,60 @@ final class Filter
 		) : $this->process(
 			...
 			$arguments
+		);
+	}
+
+	private function process(
+		$url,
+		string $directory,
+		string $parameter,
+		array & $dependencies = []
+	) : string
+	{
+		$url = new Nette\Http\Url($url);
+		$time = NULL;
+		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
+			$headers = @get_headers(
+				$url,
+				TRUE
+			);
+			if (is_array($headers) && isset($headers['Last-Modified'])) {
+				$time = new DateTime($headers['Last-Modified']);
+				$time = $time->getTimestamp();
+			}
+		} elseif ($time = @filemtime(
+			$filename = implode(
+				DIRECTORY_SEPARATOR,
+				[
+					rtrim(
+						$directory,
+						'\\/'
+					),
+					ltrim(
+						$url->getPath(),
+						'\\/'
+					),
+				]
+			)
+		)
+		) {
+			if ($dependencies) {
+				unset($dependencies[Nette\Caching\Cache::EXPIRE]);
+				$dependencies[Nette\Caching\Cache::FILES] = $filename;
+			}
+		}
+		$url->setQueryParameter(
+			$parameter,
+			$time ? : $this->time
+		);
+
+		return preg_replace(
+			$pattern = '#^(\\+|/+)#',
+			preg_match(
+				$pattern,
+				$url->getPath()
+			) ? DIRECTORY_SEPARATOR : NULL,
+			$url
 		);
 	}
 }
