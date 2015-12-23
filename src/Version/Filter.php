@@ -43,7 +43,6 @@ final class Filter
 	) {
 		$this->directory = $directory;
 		$this->parameter = $parameter;
-		$this->time = time();
 	}
 
 	public function setRequest(Nette\Http\IRequest $request)
@@ -139,7 +138,7 @@ final class Filter
 		}
 		$url->setQueryParameter(
 			$parameter,
-			$time ? : $this->time
+			$time ? : ($this->time ? : $this->time = time())
 		);
 
 		return preg_replace(
