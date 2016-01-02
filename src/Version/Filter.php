@@ -54,14 +54,7 @@ final class Filter
 		Nette\Caching\IStorage $storage,
 		$expire
 	) {
-		$this->cache = new Nette\Caching\Cache(
-			$storage,
-			strtr(
-				self::class,
-				'\\',
-				Nette\Caching\Cache::NAMESPACE_SEPARATOR
-			)
-		);
+		$this->cache = new Nette\Caching\Cache($storage, strtr(self::class, '\\', Nette\Caching\Cache::NAMESPACE_SEPARATOR));
 		$this->expire = $expire instanceof DateTime ? $expire : new DateTime($expire);
 	}
 
@@ -77,24 +70,17 @@ final class Filter
 			$parameter ? : $this->parameter,
 		];
 
-		return $this->cache ? $this->cache->load(
-			$arguments,
-			function (& $dependencies) use
-			(
-				$arguments
-			) {
-				$dependencies[Nette\Caching\Cache::EXPIRE] = $this->expire;
-				$arguments[] = &$dependencies;
-
-				return $this->process(
-					...
-					$arguments
-				);
-			}
-		) : $this->process(
-			...
+		return $this->cache ? $this->cache->load($arguments, function (& $dependencies) use
+		(
 			$arguments
-		);
+		) {
+			$dependencies[Nette\Caching\Cache::EXPIRE] = $this->expire;
+			$arguments[] = &$dependencies;
+
+			return $this->process(...
+				$arguments);
+		}) : $this->process(...
+			$arguments);
 	}
 
 	private function process(
@@ -107,47 +93,23 @@ final class Filter
 		$url = new Nette\Http\Url($url);
 		$time = NULL;
 		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
-			$headers = @get_headers(
-				$url,
-				TRUE
-			);
+			$headers = @get_headers($url, TRUE);
 			if (is_array($headers) && isset($headers['Last-Modified'])) {
 				$time = new DateTime($headers['Last-Modified']);
 				$time = $time->getTimestamp();
 			}
-		} elseif ($time = @filemtime(
-			$filename = implode(
-				DIRECTORY_SEPARATOR,
-				[
-					rtrim(
-						$directory,
-						'\\/'
-					),
-					ltrim(
-						$url->getPath(),
-						'\\/'
-					),
-				]
-			)
-		)
+		} elseif ($time = @filemtime($filename = implode(DIRECTORY_SEPARATOR, [
+			rtrim($directory, '\\/'),
+			ltrim($url->getPath(), '\\/'),
+		]))
 		) {
 			if ($dependencies) {
 				unset($dependencies[Nette\Caching\Cache::EXPIRE]);
 				$dependencies[Nette\Caching\Cache::FILES] = $filename;
 			}
 		}
-		$url->setQueryParameter(
-			$parameter,
-			$time ? : ($this->time ? : $this->time = time())
-		);
+		$url->setQueryParameter($parameter, $time ? : ($this->time ? : $this->time = time()));
 
-		return preg_replace(
-			$pattern = '#^(\\+|/+)#',
-			preg_match(
-				$pattern,
-				$url->getPath()
-			) ? DIRECTORY_SEPARATOR : NULL,
-			$url
-		);
+		return preg_replace($pattern = '#^(\\+|/+)#', preg_match($pattern, $url->getPath()) ? DIRECTORY_SEPARATOR : NULL, $url);
 	}
 }
