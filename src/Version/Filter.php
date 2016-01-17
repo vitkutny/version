@@ -93,18 +93,15 @@ final class Filter
 		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
 			$headers = @get_headers($url, TRUE);
 			if (is_array($headers) && isset($headers['Last-Modified'])) {
-				$time = new DateTime($headers['Last-Modified']);
-				$time = $time->getTimestamp();
+				$time = (new DateTime($headers['Last-Modified']))->getTimestamp();
 			}
-		} elseif ($time = @filemtime($filename = implode(DIRECTORY_SEPARATOR, [
+		} elseif (is_file($filename = implode(DIRECTORY_SEPARATOR, [
 			rtrim($directory, '\\/'),
 			ltrim($url->getPath(), '\\/'),
-		]))
-		) {
-			if ($dependencies) {
-				unset($dependencies[Nette\Caching\Cache::EXPIRE]);
-				$dependencies[Nette\Caching\Cache::FILES] = $filename;
-			}
+		]))) {
+			$time = filemtime($filename);
+			unset($dependencies[Nette\Caching\Cache::EXPIRE]);
+			$dependencies[Nette\Caching\Cache::FILES] = $filename;
 		}
 		$url->setQueryParameter($parameter, $time ? : ($this->time ? : $this->time = time()));
 
