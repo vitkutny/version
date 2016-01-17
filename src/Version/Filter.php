@@ -77,10 +77,8 @@ final class Filter
 			$dependencies[Nette\Caching\Cache::EXPIRE] = $this->expire;
 			$arguments[] = &$dependencies;
 
-			return $this->process(...
-				$arguments);
-		}) : $this->process(...
-			$arguments);
+			return $this->process(...$arguments);
+		}) : $this->process(...$arguments);
 	}
 
 	private function process(
