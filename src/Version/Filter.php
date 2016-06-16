@@ -1,4 +1,5 @@
 <?php
+
 namespace VitKutny\Version;
 
 use DateTime;
@@ -37,18 +38,21 @@ final class Filter
 	 */
 	private $time;
 
+
 	public function __construct(
-		string $directory,
-		string $parameter
+		$directory,
+		$parameter
 	) {
 		$this->directory = $directory;
 		$this->parameter = $parameter;
 	}
 
+
 	public function setRequest(Nette\Http\IRequest $request)
 	{
 		$this->request = $request;
 	}
+
 
 	public function setStorage(
 		Nette\Caching\IStorage $storage,
@@ -58,36 +62,35 @@ final class Filter
 		$this->expire = $expire instanceof DateTime ? $expire : new DateTime($expire);
 	}
 
+
 	public function __invoke(
 		$url,
-		string $directory = NULL,
-		string $parameter = NULL
-	) : string
-	{
-		$arguments = [
-			$url,
-			$directory ? : $this->directory,
-			$parameter ? : $this->parameter,
-		];
+		$directory = NULL,
+		$parameter = NULL
+	) {
+		$directory = $directory ?: $this->directory;
+		$parameter = $parameter ?: $this->parameter;
 
-		return $this->cache ? $this->cache->load($arguments, function (& $dependencies) use
-		(
-			$arguments
+		$cacheCallback = function (& $dependencies) use (
+			$url,
+			$directory,
+			$parameter
 		) {
 			$dependencies[Nette\Caching\Cache::EXPIRE] = $this->expire;
-			$arguments[] = &$dependencies;
 
-			return $this->process(...$arguments);
-		}) : $this->process(...$arguments);
+			return $this->process($url, $directory, $parameter, $dependencies);
+		};
+
+		return $this->cache ? $this->cache->load([$url, $directory, $parameter], $cacheCallback) : $this->process($url, $directory, $parameter);
 	}
+
 
 	private function process(
 		$url,
-		string $directory,
-		string $parameter,
+		$directory,
+		$parameter,
 		array & $dependencies = []
-	) : string
-	{
+	) {
 		$url = new Nette\Http\Url($url);
 		$time = NULL;
 		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
@@ -102,8 +105,9 @@ final class Filter
 			$time = filemtime($filename);
 			unset($dependencies[Nette\Caching\Cache::EXPIRE]);
 			$dependencies[Nette\Caching\Cache::FILES] = $filename;
+			$dependencies[Nette\Caching\Cache::SLIDING] = TRUE;
 		}
-		$url->setQueryParameter($parameter, $time ? : ($this->time ? : $this->time = time()));
+		$url->setQueryParameter($parameter, $time ?: ($this->time ?: $this->time = time()));
 
 		return preg_replace($pattern = '#^(\\+|/+)#', preg_match($pattern, $url->getPath()) ? DIRECTORY_SEPARATOR : NULL, $url);
 	}

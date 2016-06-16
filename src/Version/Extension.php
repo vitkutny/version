@@ -1,4 +1,5 @@
 <?php
+
 namespace VitKutny\Version;
 
 use Nette;
