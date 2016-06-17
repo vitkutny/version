@@ -5,8 +5,11 @@ namespace VitKutny\Version;
 use DateTime;
 use Nette;
 
+
 final class Filter
 {
+
+	const CACHE_TAG = 'vitkutny-version';
 
 	/**
 	 * @var string
@@ -38,13 +41,20 @@ final class Filter
 	 */
 	private $time;
 
+	/**
+	 * @var bool
+	 */
+	private $debugMode;
+
 
 	public function __construct(
 		$directory,
-		$parameter
+		$parameter,
+		$debugMode
 	) {
 		$this->directory = $directory;
 		$this->parameter = $parameter;
+		$this->debugMode = $debugMode;
 	}
 
 
@@ -81,7 +91,7 @@ final class Filter
 			return $this->process($url, $directory, $parameter, $dependencies);
 		};
 
-		return $this->cache ? $this->cache->load([$url, $directory, $parameter], $cacheCallback) : $this->process($url, $directory, $parameter);
+		return $this->cache ? $this->cache->load([$url, $directory, $parameter, $this->debugMode], $cacheCallback) : $this->process($url, $directory, $parameter);
 	}
 
 
@@ -103,10 +113,12 @@ final class Filter
 			ltrim($url->getPath(), '\\/'),
 		]))) {
 			$time = filemtime($filename);
-			unset($dependencies[Nette\Caching\Cache::EXPIRE]);
-			$dependencies[Nette\Caching\Cache::FILES] = $filename;
-			$dependencies[Nette\Caching\Cache::SLIDING] = TRUE;
+			if ($this->debugMode) {
+				$dependencies[Nette\Caching\Cache::FILES] = $filename;
+			}
 		}
+		$dependencies[Nette\Caching\Cache::SLIDING] = TRUE;
+		$dependencies[Nette\Caching\Cache::TAGS] = [self::CACHE_TAG];
 		$url->setQueryParameter($parameter, $time ?: ($this->time ?: $this->time = time()));
 
 		return preg_replace($pattern = '#^(\\+|/+)#', preg_match($pattern, $url->getPath()) ? DIRECTORY_SEPARATOR : NULL, $url);
