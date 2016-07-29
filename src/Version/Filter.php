@@ -102,24 +102,26 @@ final class Filter
 		array & $dependencies = []
 	) {
 		$url = new Nette\Http\Url($url);
-		$time = NULL;
+		$version = NULL;
 		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
 			$headers = @get_headers($url, TRUE);
-			if (is_array($headers) && isset($headers['Last-Modified'])) {
-				$time = (new DateTime($headers['Last-Modified']))->getTimestamp();
+			if (is_array($headers) && isset($headers['ETag'])) {
+				$version = preg_replace('~[^a-z0-9\-]~', '', $headers['ETag']);
+			} elseif (is_array($headers) && isset($headers['Last-Modified'])) {
+				$version = (new DateTime($headers['Last-Modified']))->getTimestamp();
 			}
 		} elseif (is_file($filename = implode(DIRECTORY_SEPARATOR, [
 			rtrim($directory, '\\/'),
 			ltrim($url->getPath(), '\\/'),
 		]))) {
-			$time = filemtime($filename);
+			$version = sha1_file($filename);
 			if ($this->debugMode) {
 				$dependencies[Nette\Caching\Cache::FILES] = $filename;
 			}
 		}
 		$dependencies[Nette\Caching\Cache::SLIDING] = TRUE;
 		$dependencies[Nette\Caching\Cache::TAGS] = [self::CACHE_TAG];
-		$url->setQueryParameter($parameter, $time ?: ($this->time ?: $this->time = time()));
+		$url->setQueryParameter($parameter, $version ?: time());
 
 		return preg_replace($pattern = '#^(\\+|/+)#', preg_match($pattern, $url->getPath()) ? DIRECTORY_SEPARATOR : NULL, $url);
 	}
