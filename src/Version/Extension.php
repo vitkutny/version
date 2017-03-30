@@ -1,7 +1,10 @@
 <?php
+
 namespace VitKutny\Version;
 
+use Kdyby;
 use Nette;
+
 
 final class Extension
 	extends Nette\DI\CompilerExtension
@@ -15,6 +18,7 @@ final class Extension
 		'parameter' => 'version',
 		'expire' => '+1 hour',
 	];
+
 
 	public function beforeCompile()
 	{
@@ -34,18 +38,33 @@ final class Extension
 			$builder->getDefinition($engine)->addSetup('addFilter', [
 				'version',
 				$filter,
-			]);
+			])
+			;
 		}
 	}
+
 
 	public function loadConfiguration()
 	{
 		parent::loadConfiguration();
 		$this->config = $this->getConfig($this->defaults);
 		$builder = $this->getContainerBuilder();
-		$builder->addDefinition($this->prefix('filter'))->setClass(Filter::class)->setArguments([
+
+		$arguments = [
 			$this->config['directory'],
 			$this->config['parameter'],
-		]);
+			$builder->parameters['debugMode'],
+		];
+		$builder->addDefinition($this->prefix('filter'))->setClass(Filter::class)->setArguments($arguments);
+
+		if ( ! class_exists(Kdyby\Console\DI\ConsoleExtension::class) || PHP_SAPI !== 'cli') {
+			return;
+		}
+		$builder = $this->getContainerBuilder();
+		$builder
+			->addDefinition($this->prefix('console.cleanCache'))
+			->setClass(CleanCacheCommand::class)
+			->addTag(Kdyby\Console\DI\ConsoleExtension::COMMAND_TAG)
+		;
 	}
 }

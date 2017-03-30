@@ -1,11 +1,15 @@
 <?php
+
 namespace VitKutny\Version;
 
 use DateTime;
 use Nette;
 
+
 final class Filter
 {
+
+	const CACHE_TAG = 'vitkutny-version';
 
 	/**
 	 * @var string
@@ -37,18 +41,28 @@ final class Filter
 	 */
 	private $time;
 
+	/**
+	 * @var bool
+	 */
+	private $debugMode;
+
+
 	public function __construct(
-		string $directory,
-		string $parameter
+		$directory,
+		$parameter,
+		$debugMode
 	) {
 		$this->directory = $directory;
 		$this->parameter = $parameter;
+		$this->debugMode = $debugMode;
 	}
+
 
 	public function setRequest(Nette\Http\IRequest $request)
 	{
 		$this->request = $request;
 	}
+
 
 	public function setStorage(
 		Nette\Caching\IStorage $storage,
@@ -58,52 +72,56 @@ final class Filter
 		$this->expire = $expire instanceof DateTime ? $expire : new DateTime($expire);
 	}
 
+
 	public function __invoke(
 		$url,
-		string $directory = NULL,
-		string $parameter = NULL
-	) : string
-	{
-		$arguments = [
-			$url,
-			$directory ? : $this->directory,
-			$parameter ? : $this->parameter,
-		];
+		$directory = NULL,
+		$parameter = NULL
+	) {
+		$directory = $directory ?: $this->directory;
+		$parameter = $parameter ?: $this->parameter;
 
-		return $this->cache ? $this->cache->load($arguments, function (& $dependencies) use
-		(
-			$arguments
+		$cacheCallback = function (& $dependencies) use (
+			$url,
+			$directory,
+			$parameter
 		) {
 			$dependencies[Nette\Caching\Cache::EXPIRE] = $this->expire;
-			$arguments[] = &$dependencies;
 
-			return $this->process(...$arguments);
-		}) : $this->process(...$arguments);
+			return $this->process($url, $directory, $parameter, $dependencies);
+		};
+
+		return $this->cache ? $this->cache->load([$url, $directory, $parameter, $this->debugMode], $cacheCallback) : $this->process($url, $directory, $parameter);
 	}
+
 
 	private function process(
 		$url,
-		string $directory,
-		string $parameter,
+		$directory,
+		$parameter,
 		array & $dependencies = []
-	) : string
-	{
+	) {
 		$url = new Nette\Http\Url($url);
-		$time = NULL;
+		$version = NULL;
 		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
 			$headers = @get_headers($url, TRUE);
-			if (is_array($headers) && isset($headers['Last-Modified'])) {
-				$time = (new DateTime($headers['Last-Modified']))->getTimestamp();
+			if (is_array($headers) && isset($headers['ETag'])) {
+				$version = preg_replace('~[^a-z0-9\-]~', '', $headers['ETag']);
+			} elseif (is_array($headers) && isset($headers['Last-Modified'])) {
+				$version = (new DateTime($headers['Last-Modified']))->getTimestamp();
 			}
 		} elseif (is_file($filename = implode(DIRECTORY_SEPARATOR, [
 			rtrim($directory, '\\/'),
 			ltrim($url->getPath(), '\\/'),
 		]))) {
-			$time = filemtime($filename);
-			unset($dependencies[Nette\Caching\Cache::EXPIRE]);
-			$dependencies[Nette\Caching\Cache::FILES] = $filename;
+			$version = sha1_file($filename);
+			if ($this->debugMode) {
+				$dependencies[Nette\Caching\Cache::FILES] = $filename;
+			}
 		}
-		$url->setQueryParameter($parameter, $time ? : ($this->time ? : $this->time = time()));
+		$dependencies[Nette\Caching\Cache::SLIDING] = TRUE;
+		$dependencies[Nette\Caching\Cache::TAGS] = [self::CACHE_TAG];
+		$url->setQueryParameter($parameter, $version ?: time());
 
 		return preg_replace($pattern = '#^(\\+|/+)#', preg_match($pattern, $url->getPath()) ? DIRECTORY_SEPARATOR : NULL, $url);
 	}
