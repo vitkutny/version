@@ -41,7 +41,7 @@ final class Extension
 	public function loadConfiguration()
 	{
 		parent::loadConfiguration();
-		$this->config = $this->getConfig($this->defaults);
+		$this->config = $this->validateConfig($this->defaults);
 		$builder = $this->getContainerBuilder();
 		$builder->addDefinition($this->prefix('filter'))->setClass(Filter::class)->setArguments([
 			$this->config['directory'],
