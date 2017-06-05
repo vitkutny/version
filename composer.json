@@ -6,8 +6,8 @@
 		}
 	},
 	"require": {
-		"php": "~7.0",
-		"nette/http": "~2.0"
+		"php": "^7.0",
+		"nette/http": "^2.0"
 	},
 	"suggest": {
 		"nette/caching": "Caching support",
