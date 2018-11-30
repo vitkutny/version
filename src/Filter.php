@@ -65,11 +65,15 @@ final class Filter
 		$directory = $directory ?: $this->directory;
 		$parameter = $parameter ?: $this->parameter;
 
-		$cacheCallback = function (& $dependencies) use (
+		$cacheCallback = function (?array &$dependencies) use (
 			$url,
 			$directory,
 			$parameter
 		) {
+			if ( ! $dependencies) {
+				$dependencies = [];
+			}
+
 			return $this->process($url, $directory, $parameter, $dependencies);
 		};
 
