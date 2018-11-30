@@ -1,14 +1,22 @@
 {
-	"name": "vitkutny/version",
+	"name": "pd/version",
+	"description": "Filtr pro zjisštění verze obsahu URL",
 	"extra": {
 		"extensions": {
-			"vitkutny.version": "VitKutny\\Version\\Extension"
+			"pd.version": "Pd\\Version\\Extension"
 		}
 	},
 	"require": {
-		"php": ">5.5",
+		"php": "7.1.*",
 		"nette/http": "~2.0 || ~3.0",
+		"nette/caching": "2.4.* || 2.5.*",
+		"nette/application": "2.3.* || 2.4.*",
+		"kdyby/console": "2.6.* || 2.7.*",
 		"symfony/console": "~2.3 || ~3.0"
+	},
+	"require-dev": {
+		"pd/coding-standard": "1.16.*",
+		"phpstan/phpstan-strict-rules": "0.10.*"
 	},
 	"suggest": {
 		"nette/caching": "Caching support",
@@ -16,7 +24,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"VitKutny\\": "src/"
+			"Pd\\Version\\": "src/"
 		}
 	}
 }

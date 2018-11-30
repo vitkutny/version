@@ -1,13 +1,8 @@
-<?php
+<?php declare(strict_types = 1);
 
-namespace VitKutny\Version;
+namespace Pd\Version;
 
-use Kdyby;
-use Nette;
-
-
-final class Extension
-	extends Nette\DI\CompilerExtension
+final class Extension extends \Nette\DI\CompilerExtension
 {
 
 	/**
@@ -16,25 +11,30 @@ final class Extension
 	private $defaults = [
 		'directory' => '%wwwDir%',
 		'parameter' => 'version',
-		'expire' => '+1 hour',
 	];
 
 
-	public function beforeCompile()
+	public function beforeCompile(): void
 	{
 		parent::beforeCompile();
 		$builder = $this->getContainerBuilder();
 		$filter = $builder->getDefinition($this->prefix('filter'));
-		if ($request = $builder->getByType(Nette\Http\IRequest::class)) {
+
+		$request = $builder->getByType(\Nette\Http\IRequest::class);
+		if ($request) {
 			$filter->addSetup('setRequest', [$builder->getDefinition($request)]);
 		}
-		if ($storage = $builder->getByType(Nette\Caching\IStorage::class)) {
+
+		$storage = $builder->getByType(\Nette\Caching\IStorage::class);
+		if ($storage) {
 			$filter->addSetup('setStorage', [
 				$builder->getDefinition($storage),
 				$this->config['expire'],
 			]);
 		}
-		if ($engine = $builder->getByType(Nette\Bridges\ApplicationLatte\ILatteFactory::class)) {
+
+		$engine = $builder->getByType(\Nette\Bridges\ApplicationLatte\ILatteFactory::class);
+		if ($engine) {
 			$builder->getDefinition($engine)->addSetup('addFilter', [
 				'version',
 				$filter,
@@ -44,7 +44,7 @@ final class Extension
 	}
 
 
-	public function loadConfiguration()
+	public function loadConfiguration(): void
 	{
 		parent::loadConfiguration();
 		$this->config = $this->getConfig($this->defaults);
@@ -57,14 +57,14 @@ final class Extension
 		];
 		$builder->addDefinition($this->prefix('filter'))->setClass(Filter::class)->setArguments($arguments);
 
-		if ( ! class_exists(Kdyby\Console\DI\ConsoleExtension::class) || PHP_SAPI !== 'cli') {
+		if ( ! \class_exists(\Kdyby\Console\DI\ConsoleExtension::class) || \PHP_SAPI !== 'cli') {
 			return;
 		}
 		$builder = $this->getContainerBuilder();
 		$builder
 			->addDefinition($this->prefix('console.cleanCache'))
 			->setClass(CleanCacheCommand::class)
-			->addTag(Kdyby\Console\DI\ConsoleExtension::COMMAND_TAG)
+			->addTag(\Kdyby\Console\DI\ConsoleExtension::COMMAND_TAG)
 		;
 	}
 }
