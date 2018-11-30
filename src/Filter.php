@@ -90,7 +90,7 @@ final class Filter
 		$url = new \Nette\Http\Url($url);
 		$version = NULL;
 		if ($url->getHost() && ( ! $this->request || $url->getHost() !== $this->request->getUrl()->getHost())) {
-			$headers = @\get_headers($url, TRUE);
+			$headers = @\get_headers($url->getAbsoluteUrl(), 1);
 			if (\is_array($headers) && isset($headers['ETag'])) {
 				$version = \preg_replace('~[^a-z0-9\-]~', '', $headers['ETag']);
 			} elseif (\is_array($headers) && isset($headers['Last-Modified'])) {
@@ -111,6 +111,6 @@ final class Filter
 		$dependencies[\Nette\Caching\Cache::TAGS] = [self::CACHE_TAG];
 		$url->setQueryParameter($parameter, $version ?: \time());
 
-		return \preg_replace($pattern = '#^(\\+|/+)#', \preg_match($pattern, $url->getPath()) ? \DIRECTORY_SEPARATOR : NULL, $url);
+		return \preg_replace($pattern = '#^(\\+|/+)#', \preg_match($pattern, $url->getPath()) ? \DIRECTORY_SEPARATOR : NULL, $url->getAbsoluteUrl());
 	}
 }
