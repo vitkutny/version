@@ -29,7 +29,6 @@ final class Extension extends \Nette\DI\CompilerExtension
 		if ($storage) {
 			$filter->addSetup('setStorage', [
 				$builder->getDefinition($storage),
-				$this->config['expire'],
 			]);
 		}
 

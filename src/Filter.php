@@ -23,11 +23,6 @@ final class Filter
 	private $cache;
 
 	/**
-	 * @var \DateTime
-	 */
-	private $expire;
-
-	/**
 	 * @var string
 	 */
 	private $parameter;
@@ -75,8 +70,6 @@ final class Filter
 			$directory,
 			$parameter
 		) {
-			$dependencies[\Nette\Caching\Cache::EXPIRE] = $this->expire;
-
 			return $this->process($url, $directory, $parameter, $dependencies);
 		};
 
