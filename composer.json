@@ -7,15 +7,15 @@
 		}
 	},
 	"require": {
-		"php": "7.1.* || 7.2.*",
+		"php": "7.1.* || 7.2.* || 7.3.*",
 		"nette/http": "~2.0 || ~3.0",
 		"nette/caching": "2.4.* || 2.5.*",
 		"nette/application": "2.3.* || 2.4.*",
 		"kdyby/console": "2.6.* || 2.7.*",
-		"symfony/console": "~2.3 || ~3.0"
+		"symfony/console": "~2.3 || ~3.0 || ~4.0"
 	},
 	"require-dev": {
-		"pd/coding-standard": "1.16.*",
+		"pd/coding-standard": "1.17.*",
 		"phpstan/phpstan-strict-rules": "0.10.*"
 	},
 	"suggest": {
