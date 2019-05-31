@@ -6,18 +6,34 @@ final class Extension extends \Nette\DI\CompilerExtension
 {
 
 	/**
-	 * @var array
+	 * @var string
 	 */
-	private $defaults = [
-		'directory' => '%wwwDir%',
-		'parameter' => 'version',
-	];
+	private $directory;
+
+	/**
+	 * @var string
+	 */
+	private $parameter;
+
+	/**
+	 * @var bool
+	 */
+	private $debugMode;
+
+
+	public function __construct(string $directory = '%wwwDir%', string $parameter = 'version', bool $debugMode = FALSE)
+	{
+		$this->directory = $directory;
+		$this->parameter = $parameter;
+		$this->debugMode = $debugMode;
+	}
 
 
 	public function beforeCompile(): void
 	{
 		parent::beforeCompile();
 		$builder = $this->getContainerBuilder();
+		/** @var \Nette\DI\Definitions\ServiceDefinition $filter */
 		$filter = $builder->getDefinition($this->prefix('filter'));
 
 		$request = $builder->getByType(\Nette\Http\IRequest::class);
@@ -34,7 +50,9 @@ final class Extension extends \Nette\DI\CompilerExtension
 
 		$engine = $builder->getByType(\Nette\Bridges\ApplicationLatte\ILatteFactory::class);
 		if ($engine) {
-			$builder->getDefinition($engine)->addSetup('addFilter', [
+			/** @var \Nette\DI\ServiceDefinition $latteEngine */
+			$latteEngine = $builder->getDefinition($engine);
+			$latteEngine->addSetup('addFilter', [
 				'version',
 				$filter,
 			])
@@ -46,13 +64,13 @@ final class Extension extends \Nette\DI\CompilerExtension
 	public function loadConfiguration(): void
 	{
 		parent::loadConfiguration();
-		$this->config = $this->getConfig($this->defaults);
+
 		$builder = $this->getContainerBuilder();
 
 		$arguments = [
-			$this->config['directory'],
-			$this->config['parameter'],
-			$builder->parameters['debugMode'],
+			$this->directory,
+			$this->parameter,
+			$this->debugMode,
 		];
 		$builder->addDefinition($this->prefix('filter'))->setClass(Filter::class)->setArguments($arguments);
 
