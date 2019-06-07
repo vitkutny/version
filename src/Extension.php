@@ -50,9 +50,9 @@ final class Extension extends \Nette\DI\CompilerExtension
 
 		$engine = $builder->getByType(\Nette\Bridges\ApplicationLatte\ILatteFactory::class);
 		if ($engine) {
-			/** @var \Nette\DI\ServiceDefinition $latteEngine */
+			/** @var \Nette\DI\Definitions\FactoryDefinition $latteEngine */
 			$latteEngine = $builder->getDefinition($engine);
-			$latteEngine->addSetup('addFilter', [
+			$latteEngine->getResultDefinition()->addSetup('addFilter', [
 				'version',
 				$filter,
 			])

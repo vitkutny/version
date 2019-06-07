@@ -17,7 +17,8 @@
 	"require-dev": {
 		"pd/coding-standard": "1.17.*",
 		"nette/tester": "2.1.*",
-		"phpstan/phpstan-strict-rules": "0.10.*"
+		"phpstan/phpstan-strict-rules": "0.10.*",
+		"latte/latte": "^2.5.1"
 	},
 	"suggest": {
 		"nette/caching": "Caching support",
