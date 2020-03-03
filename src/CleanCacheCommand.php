@@ -33,6 +33,8 @@ final class CleanCacheCommand extends \Symfony\Component\Console\Command\Command
 		if ($output->getVerbosity() > \Symfony\Component\Console\Output\Output::VERBOSITY_QUIET) {
 			$output->writeln('<info>Smazáno</info>');
 		}
+
+		return 0;
 	}
 
 }

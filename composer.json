@@ -7,7 +7,7 @@
 		}
 	},
 	"require": {
-		"php": "7.1.* || 7.2.* || 7.3.*",
+		"php": "7.1.* || 7.2.* || 7.3.* || 7.4.*",
 		"nette/http": "3.0.*",
 		"nette/caching": "3.0.*",
 		"nette/application": "3.0.*",
@@ -16,8 +16,9 @@
 	},
 	"require-dev": {
 		"pd/coding-standard": "1.17.*",
-		"nette/tester": "2.1.*",
-		"phpstan/phpstan-strict-rules": "0.10.*",
+		"nette/tester": "2.3.*",
+		"nette/bootstrap": "3.0.*",
+		"phpstan/phpstan-strict-rules": "0.12.*",
 		"latte/latte": "^2.5.1"
 	},
 	"suggest": {
