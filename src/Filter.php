@@ -2,7 +2,7 @@
 
 namespace Pd\Version;
 
-final class Filter
+final class Filter implements IFilter
 {
 
 	public const CACHE_TAG = 'pd-version';
