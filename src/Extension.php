@@ -35,15 +35,23 @@ final class Extension extends \Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		/** @var \Nette\DI\Definitions\ServiceDefinition $filter */
 		$filter = $builder->getDefinition($this->prefix('filter'));
+		/** @var \Nette\DI\Definitions\ServiceDefinition $absoluteUrlResolver */
+		$absoluteUrlResolver = $builder->getDefinition($this->prefix('absoluteUrlResolver'));
+		/** @var \Nette\DI\Definitions\ServiceDefinition $pathResolver */
+		$pathResolver = $builder->getDefinition($this->prefix('pathResolver'));
 
 		$request = $builder->getByType(\Nette\Http\IRequest::class);
 		if ($request) {
-			$filter->addSetup('setRequest', [$builder->getDefinition($request)]);
+			$absoluteUrlResolver->addSetup('setRequest', [$builder->getDefinition($request)]);
+			$pathResolver->addSetup('setRequest', [$builder->getDefinition($request)]);
 		}
 
 		$storage = $builder->getByType(\Nette\Caching\IStorage::class);
 		if ($storage) {
-			$filter->addSetup('setStorage', [
+			$absoluteUrlResolver->addSetup('setStorage', [
+				$builder->getDefinition($storage),
+			]);
+			$pathResolver->addSetup('setStorage', [
 				$builder->getDefinition($storage),
 			]);
 		}
@@ -67,12 +75,26 @@ final class Extension extends \Nette\DI\CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 
+		$absoluteUrlResolver = $builder->addDefinition($this->prefix('absoluteUrlResolver'))
+			->setFactory(\Pd\Version\Resolvers\AbsoluteUrlResolver::class)
+		;
+
+		$pathResolver = $builder->addDefinition($this->prefix('pathResolver'))
+			->setFactory(\Pd\Version\Resolvers\PathResolver::class)
+			->setArguments([$this->debugMode])
+		;
+
 		$arguments = [
 			$this->directory,
 			$this->parameter,
-			$this->debugMode,
+			$absoluteUrlResolver,
+			$pathResolver,
 		];
 		$builder->addDefinition($this->prefix('filter'))->setClass(Filter::class)->setArguments($arguments);
+
+		$builder->addDefinition($this->prefix('relativePathGetter'))
+			->setFactory(\Pd\Version\Resolvers\Getter\RelativePathGetter::class)
+		;
 
 		if ( ! \class_exists(\Kdyby\Console\DI\ConsoleExtension::class) || \PHP_SAPI !== 'cli') {
 			return;
