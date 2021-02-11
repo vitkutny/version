@@ -26,8 +26,8 @@ final class Filter implements IFilter
 
 
 	public function __construct(
-		$directory,
-		$parameter,
+		string $directory,
+		string $parameter,
 		\Pd\Version\Resolvers\PathResolverInterface ...$getters
 	)
 	{
@@ -37,10 +37,13 @@ final class Filter implements IFilter
 	}
 
 
+	/**
+	 * @param string|\Nette\Http\Url|\Nette\Http\UrlImmutable $url
+	 */
 	public function __invoke(
 		$url,
-		$directory = NULL,
-		$parameter = NULL
+		?string $directory = NULL,
+		?string $parameter = NULL
 	): ?string
 	{
 		$directory = $directory ?: $this->directory;

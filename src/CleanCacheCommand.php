@@ -5,7 +5,7 @@ namespace Pd\Version;
 final class CleanCacheCommand extends \Symfony\Component\Console\Command\Command
 {
 
-	protected function configure()
+	protected function configure(): void
 	{
 		$this->setName('pd:version:clean-cache');
 		$this->setDescription('Smaže cache verzí');

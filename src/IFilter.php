@@ -5,10 +5,13 @@ namespace Pd\Version;
 interface IFilter
 {
 
+	/**
+	 * @param string|\Nette\Http\Url|\Nette\Http\UrlImmutable $url
+	 */
 	public function __invoke(
 		$url,
-		$directory = NULL,
-		$parameter = NULL
-	);
+		?string $directory = NULL,
+		?string $parameter = NULL
+	): ?string;
 
 }

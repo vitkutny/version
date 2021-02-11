@@ -8,7 +8,7 @@ php:
 script:
     - vendor/bin/phpcs src/ --standard=vendor/pd/coding-standard/src/PeckaCodingStandard/ruleset.xml
     - vendor/bin/phpcs src/ --standard=vendor/pd/coding-standard/src/PeckaCodingStandardStrict/ruleset.xml
-    - vendor/bin/phpstan analyse src/ --level 2 --no-progress
+    - vendor/bin/phpstan analyse src/ --level 8 --no-progress
     - vendor/bin/tester tests/
 
 before_script:
