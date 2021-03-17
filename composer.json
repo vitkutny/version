@@ -18,7 +18,8 @@
 		"pd/coding-standard": "1.17.*",
 		"nette/tester": "2.3.*",
 		"nette/bootstrap": "3.0.*",
-		"phpstan/phpstan-strict-rules": "0.12.*",
+		"phpstan/phpstan": "0.12.80",
+		"phpstan/phpstan-strict-rules": "0.12.9",
 		"latte/latte": "^2.5.1"
 	},
 	"suggest": {

@@ -15,20 +15,20 @@ class AbsoluteUrlResolver extends \Pd\Version\Resolvers\AbstractPathResolver
 			return $this->process($url, $parameter);
 		}
 
-		return $this->cache->load([$url->path, $directory, $parameter], function () use ($url, $parameter): ?string {
+		return $this->cache->load([$url->path, $directory, $parameter], function () use ($url, $parameter): string {
 			return $this->process($url, $parameter);
 		});
 	}
 
 
-	private function process(\Nette\Http\Url $url, string $parameter): ?string
+	private function process(\Nette\Http\Url $url, string $parameter): string
 	{
-		$version = NULL;
+		$version = '';
 		$headers = @\get_headers($url->getAbsoluteUrl(), 1);
 		if (\is_array($headers) && isset($headers['ETag'])) {
 			$version = \preg_replace('~[^a-z0-9\-]~', '', $headers['ETag']);
 		} elseif (\is_array($headers) && isset($headers['Last-Modified'])) {
-			$version = (new \DateTime($headers['Last-Modified']))->getTimestamp();
+			$version = (string) (new \DateTime($headers['Last-Modified']))->getTimestamp();
 		}
 
 		return $this->getPath($url, $version, $parameter);

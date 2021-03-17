@@ -32,7 +32,7 @@ abstract class AbstractPathResolver implements \Pd\Version\Resolvers\PathResolve
 	{
 		$url->setQueryParameter($parameter, $version ?: \time());
 
-		return \preg_replace($pattern = '#^(\\+|/+)#', \preg_match($pattern, $url->getPath()) ? \DIRECTORY_SEPARATOR : NULL, $url->getAbsoluteUrl());
+		return (string) \preg_replace($pattern = '#^(\\+|/+)#', \preg_match($pattern, $url->getPath()) ? \DIRECTORY_SEPARATOR : '', $url->getAbsoluteUrl());
 	}
 
 }
