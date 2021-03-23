@@ -50,7 +50,7 @@ class PathResolver extends \Pd\Version\Resolvers\AbstractPathResolver
 	private function process(\Nette\Http\Url $url, string $realPath, string $parameter, ?array &$dependencies = NULL): string
 	{
 		$version = (string) \sha1_file($realPath);
-		if ($this->debugMode && $dependencies) {
+		if ($this->debugMode) {
 			$dependencies[\Nette\Caching\Cache::FILES] = $realPath;
 		}
 		$dependencies[\Nette\Caching\Cache::TAGS] = \Pd\Version\Filter::CACHE_TAG;
