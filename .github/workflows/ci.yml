@@ -15,9 +15,9 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: tokenizer
 
       - run: make composer
       - run: make cs
+        if: matrix.php == '7.4'
       - run: make phpstan
       - run: make run-tests
