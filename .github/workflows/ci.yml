@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        php: [ 7.1, 7.2, 7.3, 7.4 ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - run: make composer
+
+      - if: matrix.php == '7.4'
+        run: make cs
+
+      - if: matrix.php == '7.4'
+        run: make phpstan
+
+      - run: make run-tests
