@@ -14,7 +14,7 @@ class TestCase extends \Tester\TestCase
 	protected $container;
 
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$configurator = new \Nette\Configurator();
 		$configurator->addConfig(__DIR__ . '/PdTests/Version/DI/extension.neon');
