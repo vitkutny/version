@@ -16,10 +16,12 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
 
-      - run: echo matrix.php
-
       - run: make composer
-      - run: make cs
-        if: matrix.php == '7.4'
-      - run: make phpstan
+
+      - if: matrix.php == '7.4'
+        run: make cs
+
+      - if: matrix.php == '7.4'
+        run: make phpstan
+
       - run: make run-tests
