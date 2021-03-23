@@ -53,7 +53,7 @@ class PathResolver extends \Pd\Version\Resolvers\AbstractPathResolver
 		if ($this->debugMode) {
 			$dependencies[\Nette\Caching\Cache::FILES] = $realPath;
 		}
-		$dependencies[\Nette\Caching\Cache::TAGS] = \Pd\Version\Filter::CACHE_TAG;
+		$dependencies[\Nette\Caching\Cache::TAGS] = [\Pd\Version\Filter::CACHE_TAG];
 
 		return $this->getPath($url, $version, $parameter);
 	}
