@@ -1,12 +1,12 @@
-name: CI
+name: Package CI
 
 on:
   pull_request:
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-20.04
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         php: [ 7.1, 7.2, 7.3, 7.4 ]
