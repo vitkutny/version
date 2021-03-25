@@ -1,6 +1,6 @@
 composer:
 	composer validate
-	composer install --no-interaction --prefer-dist
+	composer update --no-interaction --prefer-dist
 
 phpstan:
 	vendor/bin/phpstan analyse src/ --level 8 --no-progress
