@@ -5,15 +5,9 @@ namespace Pd\Version\Resolvers;
 class PathResolver extends \Pd\Version\Resolvers\AbstractPathResolver
 {
 
-	/**
-	 * @var bool
-	 */
-	private $debugMode;
+	private bool $debugMode;
 
-	/**
-	 * @var \Pd\Version\Resolvers\Getter\RelativePathGetterInterface
-	 */
-	private $relativePathGetter;
+	private \Pd\Version\Resolvers\Getter\RelativePathGetterInterface $relativePathGetter;
 
 
 	public function __construct(

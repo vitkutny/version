@@ -5,20 +5,11 @@ namespace Pd\Version;
 final class Extension extends \Nette\DI\CompilerExtension
 {
 
-	/**
-	 * @var string
-	 */
-	private $directory;
+	private string $directory;
 
-	/**
-	 * @var string
-	 */
-	private $parameter;
+	private string $parameter;
 
-	/**
-	 * @var bool
-	 */
-	private $debugMode;
+	private bool $debugMode;
 
 
 	public function __construct(string $directory = '%wwwDir%', string $parameter = 'version', bool $debugMode = FALSE)
@@ -106,4 +97,5 @@ final class Extension extends \Nette\DI\CompilerExtension
 			->addTag(\Kdyby\Console\DI\ConsoleExtension::COMMAND_TAG)
 		;
 	}
+
 }

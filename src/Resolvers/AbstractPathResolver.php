@@ -5,15 +5,9 @@ namespace Pd\Version\Resolvers;
 abstract class AbstractPathResolver implements \Pd\Version\Resolvers\PathResolverInterface
 {
 
-	/**
-	 * @var ?\Nette\Caching\Cache
-	 */
-	protected $cache;
+	protected ?\Nette\Caching\Cache $cache = NULL;
 
-	/**
-	 * @var ?\Nette\Http\IRequest
-	 */
-	protected $request;
+	protected ?\Nette\Http\IRequest $request = NULL;
 
 
 	public function setRequest(\Nette\Http\IRequest $request): void
