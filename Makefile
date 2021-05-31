@@ -3,7 +3,7 @@ composer:
 	composer update --no-interaction --prefer-dist
 
 phpstan:
-	vendor/bin/phpstan analyse src/ --level 8 --no-progress
+	vendor/bin/phpstan analyse src/ -c phpstan.neon --level 8 --no-progress
 
 cs:
 	vendor/bin/phpcs src/ --standard=vendor/pd/coding-standard/src/PeckaCodingStandard/ruleset.xml

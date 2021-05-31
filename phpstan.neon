@@ -1,0 +1,5 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '~^Parameter #2 \$(format|associative) of function get_headers expects (int|bool), int\|true given\.$~'
+			path: src/Resolvers/AbsoluteUrlResolver.php
