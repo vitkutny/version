@@ -7,22 +7,15 @@ final class Filter implements IFilter
 
 	public const CACHE_TAG = 'pd-version';
 
-	/**
-	 * @var string
-	 */
-	private $directory;
 
+	private string $directory;
 
-	/**
-	 * @var string
-	 */
-	private $parameter;
-
+	private string $parameter;
 
 	/**
 	 * @var \Pd\Version\Resolvers\PathResolverInterface[]
 	 */
-	private $getters;
+	private array $getters;
 
 
 	public function __construct(

@@ -5,20 +5,11 @@ namespace Pd\Version;
 final class Extension extends \Nette\DI\CompilerExtension
 {
 
-	/**
-	 * @var string
-	 */
-	private $directory;
+	private string $directory;
 
-	/**
-	 * @var string
-	 */
-	private $parameter;
+	private string $parameter;
 
-	/**
-	 * @var bool
-	 */
-	private $debugMode;
+	private bool $debugMode;
 
 
 	public function __construct(string $directory = '%wwwDir%', string $parameter = 'version', bool $debugMode = FALSE)
@@ -31,7 +22,6 @@ final class Extension extends \Nette\DI\CompilerExtension
 
 	public function beforeCompile(): void
 	{
-		parent::beforeCompile();
 		$builder = $this->getContainerBuilder();
 		/** @var \Nette\DI\Definitions\ServiceDefinition $filter */
 		$filter = $builder->getDefinition($this->prefix('filter'));
@@ -71,8 +61,6 @@ final class Extension extends \Nette\DI\CompilerExtension
 
 	public function loadConfiguration(): void
 	{
-		parent::loadConfiguration();
-
 		$builder = $this->getContainerBuilder();
 
 		$absoluteUrlResolver = $builder->addDefinition($this->prefix('absoluteUrlResolver'))
@@ -90,7 +78,11 @@ final class Extension extends \Nette\DI\CompilerExtension
 			$absoluteUrlResolver,
 			$pathResolver,
 		];
-		$builder->addDefinition($this->prefix('filter'))->setClass(Filter::class)->setArguments($arguments);
+		$builder
+			->addDefinition($this->prefix('filter'))
+			->setFactory(Filter::class)
+			->setArguments($arguments)
+		;
 
 		$builder->addDefinition($this->prefix('relativePathGetter'))
 			->setFactory(\Pd\Version\Resolvers\Getter\RelativePathGetter::class)
@@ -102,8 +94,9 @@ final class Extension extends \Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$builder
 			->addDefinition($this->prefix('console.cleanCache'))
-			->setClass(CleanCacheCommand::class)
-			->addTag(\Kdyby\Console\DI\ConsoleExtension::COMMAND_TAG)
+			->setFactory(CleanCacheCommand::class)
+			->addTag(\Kdyby\Console\DI\ConsoleExtension::TAG_COMMAND)
 		;
 	}
+
 }

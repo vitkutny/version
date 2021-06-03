@@ -24,7 +24,7 @@ class AbsoluteUrlResolver extends \Pd\Version\Resolvers\AbstractPathResolver
 	private function process(\Nette\Http\Url $url, string $parameter): string
 	{
 		$version = '';
-		$headers = @\get_headers($url->getAbsoluteUrl(), 1);
+		$headers = @\get_headers($url->getAbsoluteUrl(), \PHP_VERSION_ID >= 80000 ? TRUE : 1);
 		if (\is_array($headers) && isset($headers['ETag'])) {
 			$version = \preg_replace('~[^a-z0-9\-]~', '', $headers['ETag']);
 		} elseif (\is_array($headers) && isset($headers['Last-Modified'])) {
