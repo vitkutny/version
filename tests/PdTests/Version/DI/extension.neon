@@ -1,6 +1,5 @@
 extensions:
 	version: Pd\Version\Extension
-	console: Kdyby\Console\DI\ConsoleExtension
 
 services:
 	cache.storage: PdTests\Version\Cache\TestDevNullStorage
