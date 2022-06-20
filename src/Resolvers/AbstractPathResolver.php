@@ -5,6 +5,9 @@ namespace Pd\Version\Resolvers;
 abstract class AbstractPathResolver implements \Pd\Version\Resolvers\PathResolverInterface
 {
 
+	public const NAMESPACE_SEPARATOR = "\x00";
+
+
 	protected ?\Nette\Caching\Cache $cache = NULL;
 
 	protected ?\Nette\Http\IRequest $request = NULL;
@@ -18,7 +21,7 @@ abstract class AbstractPathResolver implements \Pd\Version\Resolvers\PathResolve
 
 	public function setStorage(\Nette\Caching\IStorage $storage): void
 	{
-		$this->cache = new \Nette\Caching\Cache($storage, \strtr(self::class, '\\', \Nette\Caching\Cache::NAMESPACE_SEPARATOR));
+		$this->cache = new \Nette\Caching\Cache($storage, \strtr(self::class, '\\', self::NAMESPACE_SEPARATOR));
 	}
 
 
